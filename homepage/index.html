@@ -29,7 +29,6 @@
             overflow-x: hidden;
         }
 
-        /* Background Ripples */
         .bg-effects {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -52,7 +51,6 @@
             100% { transform: translate(8vw, -5vw) scale(1.15); }
         }
 
-        /* Header & Navigation */
         .header {
             position: fixed;
             top: 0;
@@ -64,6 +62,7 @@
             justify-content: space-between;
             align-items: center;
             z-index: 100;
+            background: linear-gradient(to bottom, rgba(249,249,249,0.9) 30%, transparent);
         }
         
         .logo {
@@ -83,7 +82,7 @@
         .main-nav {
             display: flex;
             align-items: center;
-            gap: 2rem;
+            gap: 1.5rem;
             flex-wrap: wrap;
         }
 
@@ -97,6 +96,15 @@
         }
 
         .nav-link:hover {
+            opacity: 1;
+        }
+        
+        .patreon-btn {
+            opacity: 0.7;
+            border-bottom: 1px solid transparent;
+        }
+        .patreon-btn:hover {
+            color: #ff424d;
             opacity: 1;
         }
 
@@ -113,12 +121,11 @@
             color: var(--bg-color);
         }
 
-        /* Language Selector (Inline) */
         .lang-selector-inline {
             display: flex;
             gap: 0.8rem;
-            margin-left: 1rem;
-            padding-left: 2rem;
+            margin-left: 0.5rem;
+            padding-left: 1.5rem;
             border-left: 1px solid rgba(26, 26, 46, 0.15);
         }
 
@@ -140,7 +147,6 @@
             opacity: 1;
         }
 
-        /* Initial Scroll Animation (CSS) */
         .fade-up {
             opacity: 0;
             transform: translateY(40px);
@@ -153,7 +159,6 @@
             transform: translateY(0);
         }
 
-        /* Layout */
         section {
             min-height: 100vh;
             display: flex;
@@ -161,6 +166,12 @@
             justify-content: center;
             padding: 0 10%;
             box-sizing: border-box;
+        }
+        
+        .section-auto-height {
+            min-height: auto;
+            padding-top: 8rem;
+            padding-bottom: 10rem;
         }
 
         p { margin: 0; }
@@ -233,7 +244,166 @@
             text-align: center;
         }
 
-        /* Toast Component */
+        .sponsors-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5rem;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .sponsors-title {
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .sponsor-tier {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .sponsor-tier-label {
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+            opacity: 0.4;
+            text-transform: uppercase;
+        }
+
+        .sponsor-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .sponsor-hyper-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            width: 100%;
+        }
+        .sponsor-hyper {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 1.5rem 2.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(96, 165, 250, 0.15);
+            backdrop-filter: blur(5px);
+        }
+        .sponsor-hyper img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sponsor-hyper-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .sponsor-hyper .name {
+            font-size: 1.3rem;
+            font-weight: 400;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 12px rgba(96, 165, 250, 0.4);
+        }
+        .sponsor-hyper .desc {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            opacity: 0.75;
+        }
+
+        .sponsor-pro {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .sponsor-pro img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sponsor-pro .name {
+            font-size: 1.1rem;
+            font-weight: 400;
+            background: linear-gradient(135deg, #60a5fa, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sponsor-plus {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .sponsor-plus img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sponsor-plus .name {
+            font-size: 1rem;
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+
+        .sponsor-normal {
+            font-size: 1rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .corporate-sponsor {
+            position: fixed;
+            bottom: 2rem;
+            right: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.4rem;
+            z-index: 90;
+            opacity: 0.7;
+            transition: opacity 0.4s ease;
+        }
+        .corporate-sponsor:hover {
+            opacity: 1;
+        }
+        .corporate-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            opacity: 0.6;
+        }
+        .corporate-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+        }
+        .corporate-logo img {
+            height: 32px;
+            width: auto;
+            border-radius: 4px;
+        }
+
+
         .toast {
             position: fixed;
             bottom: 3rem;
@@ -260,17 +430,15 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* Mobile Adjustments */
         @media (max-width: 900px) {
             .header {
                 padding: 1.5rem;
                 flex-direction: column;
-                gap: 1.5rem;
-                background: linear-gradient(to bottom, var(--bg-color) 70%, transparent);
+                gap: 1.2rem;
             }
             .main-nav {
                 justify-content: center;
-                gap: 1.2rem;
+                gap: 1rem;
             }
             .lang-selector-inline {
                 margin-left: 0;
@@ -285,6 +453,15 @@
                 padding-top: 1.5rem;
                 padding-bottom: 1.5rem;
             }
+            .sponsor-hyper {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.5rem;
+            }
+            .corporate-sponsor {
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -296,17 +473,26 @@
         <div class="ripple-bg ripple-3"></div>
     </div>
 
+    <div class="corporate-sponsor">
+        <span class="corporate-label" data-i18n="supported_by">Supported by</span>
+        <a href="https://example.com" target="_blank" class="corporate-logo">
+            <img src="https://via.placeholder.com/80x32/1a1a2e/f9f9f9?text=LOGO" alt="Company Logo">
+            <span>Example Corp.</span>
+        </a>
+    </div>
+
     <header class="header">
         <div class="logo">
-            <img src="favicon.svg" alt="Water icon" class="logo-icon">
+            <img src="favicon.svg" alt="Water icon" class="logo-icon" onerror="this.style.display='none'">
             <span>Water</span>
         </div>
         <nav class="main-nav">
-            <a href="docs.html" class="nav-link" data-enabled="false" data-i18n="nav_docs">Docs</a>
-            <a href="play.html" class="nav-link" data-enabled="false" data-i18n="nav_play">Playground</a>
-            <a href="packages.html" class="nav-link" data-enabled="false" data-i18n="nav_packages">Packages</a>
-            <a href="community.html" class="nav-link" data-enabled="false" data-i18n="nav_community">Community</a>
-            <a href="https://bessho-dev.github.io/water/homepage/download.html" target="_blank" class="nav-link download-btn" data-enabled="true" data-i18n="nav_download">Download</a>
+            <a href="docs.html" class="nav-link" data-enabled="false" data-i18n="nav_docs">ドキュメント</a>
+            <a href="play.html" class="nav-link" data-enabled="false" data-i18n="nav_play">プレイグラウンド</a>
+            <a href="packages.html" class="nav-link" data-enabled="false" data-i18n="nav_packages">パッケージ</a>
+            <a href="community.html" class="nav-link" data-enabled="false" data-i18n="nav_community">コミュニティ</a>
+            <a href="https://www.patreon.com/" target="_blank" class="nav-link patreon-btn" data-enabled="true" data-i18n="nav_patreon">Patreon</a>
+            <a href="https://bessho-dev.github.io/water/homepage/download.html" target="_blank" class="nav-link download-btn" data-enabled="true" data-i18n="nav_download">ダウンロード</a>
             
             <div class="lang-selector-inline">
                 <button class="lang-btn" id="btn-en" onclick="setLanguage('en')">EN</button>
@@ -354,6 +540,57 @@
                 文法を学ぶのではない。作法を思い出すのだ。
             </div>
         </section>
+
+        <section class="section-auto-height">
+            <div class="sponsors-container fade-up">
+                <div class="sponsors-title" data-i18n="sponsors_title">Sponsors</div>
+
+                <div class="sponsor-tier">
+                    <div class="sponsor-tier-label">Hyper Sponsors</div>
+                    <div class="sponsor-hyper-wrapper">
+                        <div class="sponsor-hyper">
+                            <img src="https://bessho-dev.github.io/water/homepage/sample_icon.png" alt="Hyper Sponsor">
+                            <div class="sponsor-hyper-info">
+                                <div class="name">No sponsor</div>
+                                <div class="desc">Support this project on Patreon to see your name listed here !</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sponsor-tier">
+                    <div class="sponsor-tier-label">Pro Sponsors</div>
+                    <div class="sponsor-list">
+                        <div class="sponsor-pro">
+                            <img src="https://bessho-dev.github.io/water/homepage/sample_icon.png" alt="Pro Sponsor">
+                            <span class="name">No sponsor</span>
+                        </div>
+                        <div class="sponsor-pro">
+                            <img src="https://bessho-dev.github.io/water/homepage/sample_icon.png" alt="Pro Sponsor">
+                            <span class="name">No sponsor</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sponsor-tier">
+                    <div class="sponsor-tier-label">Plus Sponsors</div>
+                    <div class="sponsor-list">
+                        <div class="sponsor-plus">
+                            <img src="https://bessho-dev.github.io/water/homepage/sample_icon.png" alt="Plus Sponsor">
+                            <span class="name">No sponsor</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sponsor-tier">
+                    <div class="sponsor-tier-label">Sponsors</div>
+                    <div class="sponsor-list">
+                        <span class="sponsor-normal">No sponsor</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
     </main>
     
     <div id="toast" class="toast">
@@ -369,11 +606,14 @@
                 python_label: "Python",
                 water_label: "Water",
                 philosophy: "文法を学ぶのではない。作法を思い出すのだ。",
-                nav_docs: "Docs",
-                nav_play: "Playground",
-                nav_packages: "Packages",
-                nav_community: "Community",
-                nav_download: "Download",
+                nav_docs: "ドキュメント",
+                nav_play: "プレイグラウンド",
+                nav_packages: "パッケージ",
+                nav_community: "コミュニティ",
+                nav_download: "ダウンロード",
+                nav_patreon: "Patreon",
+                sponsors_title: "スポンサー",
+                supported_by: "Supported by",
                 wait_message: "その深みにはまだ到達できません。もう少々お待ちを！"
             },
             en: {
@@ -388,6 +628,9 @@
                 nav_packages: "Packages",
                 nav_community: "Community",
                 nav_download: "Download",
+                nav_patreon: "Patreon",
+                sponsors_title: "Sponsors",
+                supported_by: "Supported by",
                 wait_message: "That depth is not yet reachable. Please wait a little longer!"
             },
             ko: {
@@ -397,11 +640,14 @@
                 python_label: "Python",
                 water_label: "Water",
                 philosophy: "문법을 배우는 것이 아니다. 예법을 기억해내는 것이다.",
-                nav_docs: "Docs",
-                nav_play: "Playground",
-                nav_packages: "Packages",
-                nav_community: "Community",
-                nav_download: "Download",
+                nav_docs: "문서",
+                nav_play: "플레이그라운드",
+                nav_packages: "패키지",
+                nav_community: "커뮤니티",
+                nav_download: "다운로드",
+                nav_patreon: "Patreon",
+                sponsors_title: "후원자",
+                supported_by: "Supported by",
                 wait_message: "아직 닿을 수 없는 깊이입니다. 조금만 더 기다려주세요!"
             },
             zh: {
@@ -411,11 +657,14 @@
                 python_label: "Python",
                 water_label: "Water",
                 philosophy: "并非学习语法，而是拾回作法。",
-                nav_docs: "Docs",
-                nav_play: "Playground",
-                nav_packages: "Packages",
-                nav_community: "Community",
-                nav_download: "Download",
+                nav_docs: "文档",
+                nav_play: "游乐场",
+                nav_packages: "包管理",
+                nav_community: "社区",
+                nav_download: "下载",
+                nav_patreon: "Patreon",
+                sponsors_title: "赞助商",
+                supported_by: "Supported by",
                 wait_message: "此深处尚未触达。请再稍候片刻！"
             }
         };
