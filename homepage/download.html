@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Downloading...</title>
+</head>
+<body>
+    <p>ダウンロードが開始されます。始まらない場合は <a id="download-link" href="https://bessho-dev.github.io/water/water.py">こちら</a> をクリックしてください。</p>
+
+    <script>
+        window.onload = function() {
+            const url = "https://bessho-dev.github.io/water/water.py";
+            const fileName = "water.py";
+
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = fileName;
+            document.body.appendChild(anchor);
+            anchor.click();
+            document.body.removeChild(anchor);
+        };
+    </script>
+</body>
+</html>
