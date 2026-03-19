@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@200;300;400&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #f9f9f9;
+            --text-color: #1a1a2e;
+            --font-serif: "Noto Serif JP", "Noto Serif", "Hiragino Mincho ProN", "Yu Mincho", serif;
+            --font-mono: "JetBrains Mono", "Courier New", monospace;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-serif);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        .bg-effects {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .ripple-bg {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(96, 165, 250, 0.05) 0%, rgba(96, 165, 250, 0) 65%);
+            animation: drift 20s infinite alternate ease-in-out;
+        }
+        .ripple-1 { width: 90vw; height: 90vw; top: -20vw; left: -20vw; }
+        .ripple-2 { width: 70vw; height: 70vw; bottom: -10vw; right: -10vw; animation-duration: 25s; animation-delay: -5s; }
+        .ripple-3 { width: 50vw; height: 50vw; top: 30vh; left: 40vw; animation-duration: 30s; animation-delay: -12s; }
+
+        @keyframes drift {
+            0%   { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(8vw, -5vw) scale(1.15); }
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 3rem;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(249,249,249,0.9) 30%, transparent);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+            opacity: 0.8;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        .main-nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            opacity: 0.5;
+            transition: all 0.4s ease;
+        }
+
+        .nav-link:hover {
+            opacity: 1;
+        }
+        
+        .patreon-btn {
+            opacity: 0.7;
+            border-bottom: 1px solid transparent;
+        }
+        .patreon-btn:hover {
+            color: #ff424d;
+            opacity: 1;
+        }
+
+        .download-btn {
+            border: 1px solid rgba(26, 26, 46, 0.2);
+            padding: 0.4rem 1.4rem;
+            border-radius: 2rem;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+
+        .download-btn:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        .lang-selector-inline {
+            display: flex;
+            gap: 0.8rem;
+            margin-left: 0.5rem;
+            padding-left: 1.5rem;
+            border-left: 1px solid rgba(26, 26, 46, 0.15);
+        }
+
+        .lang-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            opacity: 0.25;
+            font-family: var(--font-serif);
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: opacity 0.5s ease;
+            padding: 0;
+            outline: none;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1;
+        }
+
+        .fade-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 2s cubic-bezier(0.2, 0.6, 0.3, 1),
+                        transform 2s cubic-bezier(0.2, 0.6, 0.3, 1);
+        }
+
+        .fade-up.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10%;
+            box-sizing: border-box;
+        }
+        
+        .section-auto-height {
+            min-height: auto;
+            padding-top: 8rem;
+            padding-bottom: 10rem;
+        }
+
+        p { margin: 0; }
+
+        .statement {
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            font-weight: 300;
+            letter-spacing: 0.08em;
+            line-height: 2.2;
+            text-align: center;
+            opacity: 0.85;
+            max-width: 800px;
+        }
+
+        .headline {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            text-align: center;
+            margin: 0;
+        }
+
+        .concept {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            font-weight: 300;
+            line-height: 2.8;
+            letter-spacing: 0.08em;
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        .code-comparison {
+            display: flex;
+            flex-direction: column;
+            gap: 6rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .code-block {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .code-label {
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            opacity: 0.4;
+            font-weight: 300;
+        }
+
+        .code-content {
+            font-family: var(--font-mono);
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-weight: 300;
+            letter-spacing: 0.03em;
+            color: var(--text-color);
+            background: transparent;
+            padding: 2.5rem 0;
+            border-left: 1px solid rgba(26, 26, 46, 0.15);
+            padding-left: 3rem;
+            line-height: 1.6;
+        }
+
+        .philosophy {
+            font-size: clamp(1.4rem, 4vw, 2.2rem);
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            text-align: center;
+        }
+
+        .sponsors-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5rem;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .sponsors-title {
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .sponsor-tier {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .sponsor-tier-label {
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+            opacity: 0.4;
+            text-transform: uppercase;
+        }
+
+        .sponsor-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .sponsor-hyper-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            width: 100%;
+        }
+        .sponsor-hyper {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 1.5rem 2.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(96, 165, 250, 0.15);
+            backdrop-filter: blur(5px);
+        }
+        .sponsor-hyper img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sponsor-hyper-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .sponsor-hyper .name {
+            font-size: 1.3rem;
+            font-weight: 400;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 12px rgba(96, 165, 250, 0.4);
+        }
+        .sponsor-hyper .desc {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            opacity: 0.75;
+        }
+
+        .sponsor-pro {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .sponsor-pro img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sponsor-pro .name {
+            font-size: 1.1rem;
+            font-weight: 400;
+            background: linear-gradient(135deg, #60a5fa, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sponsor-plus {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .sponsor-plus img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sponsor-plus .name {
+            font-size: 1rem;
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+
+        .sponsor-normal {
+            font-size: 1rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .corporate-sponsor {
+            position: fixed;
+            bottom: 2rem;
+            right: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.4rem;
+            z-index: 90;
+            opacity: 0.7;
+            transition: opacity 0.4s ease;
+        }
+        .corporate-sponsor:hover {
+            opacity: 1;
+        }
+        .corporate-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            opacity: 0.6;
+        }
+        .corporate-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+        }
+        .corporate-logo img {
+            height: 32px;
+            width: auto;
+            border-radius: 4px;
+        }
+
+
+        .toast {
+            position: fixed;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(26, 26, 46, 0.95);
+            color: #f9f9f9;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-family: var(--font-serif);
+            letter-spacing: 0.05em;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.2, 0.6, 0.3, 1);
+            z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 900px) {
+            .header {
+                padding: 1.5rem;
+                flex-direction: column;
+                gap: 1.2rem;
+            }
+            .main-nav {
+                justify-content: center;
+                gap: 1rem;
+            }
+            .lang-selector-inline {
+                margin-left: 0;
+                padding-left: 0;
+                border-left: none;
+                width: 100%;
+                justify-content: center;
+                margin-top: 0.5rem;
+            }
+            .code-content {
+                padding-left: 1.5rem;
+                padding-top: 1.5rem;
+                padding-bottom: 1.5rem;
+            }
+            .sponsor-hyper {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.5rem;
+            }
+            .corporate-sponsor {
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-effects">
+        <div class="ripple-bg ripple-1"></div>
+        <div class="ripple-bg ripple-2"></div>
+        <div class="ripple-bg ripple-3"></div>
+    </div>
+
+    <div class="corporate-sponsor">
+        <span class="corporate-label" data-i18n="supported_by">developed by</span>
+        <a href="https://github.com/bessho-dev" target="_blank" class="corporate-logo">
+            <img src="favicon.svg" alt="Company Logo">
+            <span>ifuto (13yo developer)</span>
+        </a>
+    </div>
+
+    <header class="header">
+        <div class="logo">
+            <img src="favicon.svg" alt="Water icon" class="logo-icon" onerror="this.style.display='none'">
+            <span>Water</span>
+        </div>
+        <nav class="main-nav">
+            <a href="docs.html" class="nav-link" data-enabled="false" data-i18n="nav_docs">Docs</a>
+            <a href="play.html" class="nav-link" data-enabled="false" data-i18n="nav_play">Playground</a>
+            <a href="packages.html" class="nav-link" data-enabled="false" data-i18n="nav_packages">Packages</a>
+            <a href="community.html" class="nav-link" data-enabled="false" data-i18n="nav_community">Community</a>
+            <a href="https://www.patreon.com/" target="_blank" class="nav-link patreon-btn" data-enabled="false" data-i18n="nav_patreon">Patreon</a>
+            <a href="https://bessho-dev.github.io/water/homepage/download.html" target="_blank" class="nav-link download-btn" data-enabled="true" data-i18n="nav_download">Download</a>
+            
+            <div class="lang-selector-inline">
+                <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')">EN</button>
+                <button class="lang-btn" id="btn-ja" onclick="setLanguage('ja')">JA</button>
+                <button class="lang-btn" id="btn-ko" onclick="setLanguage('ko')">KO</button>
+                <button class="lang-btn" id="btn-zh" onclick="setLanguage('zh')">ZH</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <div class="fade-up statement" data-i18n="statement">
+                Why must we conform to the language of machines ?
+            </div>
+        </section>
+
+        <section>
+            <h1 class="fade-up headline" data-i18n="headline">
+                Water: Turning description into breath.
+            </h1>
+        </section>
+
+        <section>
+            <p class="fade-up concept" data-i18n="concept">
+                Water has no shape.<br>The writer's thoughts naturally flow into the shape of code.<br>If Python is 'concise', Water is 'transparent'.<br>With every touch of your fingertips, logic quietly ripples outward.
+            </p>
+        </section>
+
+        <section>
+            <div class="code-comparison">
+                <div class="code-block fade-up">
+                    <div class="code-label" data-i18n="python_label">Python</div>
+                    <div class="code-content">a = round(min((x + 10) / 5, 10) - 2)</div>
+                </div>
+                <div class="code-block fade-up">
+                    <div class="code-label" data-i18n="water_label">Water (Under the Surface: Private Beta)</div>
+                    <div class="code-content">a = math.compute (x+10) (cv/5) (min(cv, 10)) (cv-2) (round(cv))</div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="fade-up philosophy" data-i18n="philosophy">
+                Do not learn syntax. Remember the flow.
+            </div>
+        </section>
+
+        <section class="section-auto-height">
+            <div class="sponsors-container fade-up">
+                <div class="sponsors-title" data-i18n="sponsors_title">Sponsors</div>
+
+                <div class="sponsor-tier">
+                    <div class="sponsor-tier-label">Hyper Sponsors</div>
+                    <div class="sponsor-hyper-wrapper">
+                        <div class="sponsor-hyper">
+                            <img src="https://bessho-dev.github.io/water/homepage/sample_icon.png" alt="Hyper Sponsor">
+                            <div class="sponsor-hyper-info">
+                                <div class="name">No sponsor</div>
+                                <div class="desc">Support this project on Patreon to see your name listed here !</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sponsor-tier">
+                    <div class="sponsor-tier-label">Pro Sponsors</div>
+                    <div class="sponsor-list">
+                        <div class="sponsor-pro">
+                            <img src="https://bessho-dev.github.io/water/homepage/sample_icon.png" alt="Pro Sponsor">
+                            <span class="name">No sponsor</span>
+                        </div>
+                        <div class="sponsor-pro">
+                            <img src="https://bessho-dev.github.io/water/homepage/sample_icon.png" alt="Pro Sponsor">
+                            <span class="name">No sponsor</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sponsor-tier">
+                    <div class="sponsor-tier-label">Plus Sponsors</div>
+                    <div class="sponsor-list">
+                        <div class="sponsor-plus">
+                            <img src="https://bessho-dev.github.io/water/homepage/sample_icon.png" alt="Plus Sponsor">
+                            <span class="name">No sponsor</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sponsor-tier">
+                    <div class="sponsor-tier-label">Sponsors</div>
+                    <div class="sponsor-list">
+                        <span class="sponsor-normal">No sponsor</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+    
+    <div id="toast" class="toast">
+        <span data-i18n="wait_message">That depth is not yet reachable. Please wait a little longer!</span>
+    </div>
+
+    <script>
+        const translations = {
+            ja: {
+                statement: "なぜ私たちは、機械の言葉に自分を合わせなければならないのか？",
+                headline: "Water：記述を、呼吸に変える。",
+                concept: "水には形がない。<br>書く者の思考が、そのままコードの形に流転する。<br>Pythonが『簡潔』なら、Waterは『透明』だ。<br>指先が触れるたび、ロジックは静かに波紋を広げる。",
+                python_label: "Python",
+                water_label: "Water",
+                philosophy: "文法を学ぶのではない。作法を思い出すのだ。",
+                nav_docs: "ドキュメント",
+                nav_play: "プレイグラウンド",
+                nav_packages: "パッケージ",
+                nav_community: "コミュニティ",
+                nav_download: "ダウンロード",
+                nav_patreon: "Patreon",
+                sponsors_title: "スポンサー",
+                supported_by: "Developed by",
+                wait_message: "その深みにはまだ到達できません。もう少々お待ちを！"
+            },
+            en: {
+                statement: "Why must we conform to the language of machines?",
+                headline: "Water: Turning description into breath.",
+                concept: "Water has no shape.<br>The writer's thoughts naturally flow into the shape of code.<br>If Python is 'concise', Water is 'transparent'.<br>With every touch of your fingertips, logic quietly ripples outward.",
+                python_label: "Python",
+                water_label: "Water (Under the Surface: Private Beta)",
+                philosophy: "Do not learn syntax. Remember the flow.",
+                nav_docs: "Docs",
+                nav_play: "Playground",
+                nav_packages: "Packages",
+                nav_community: "Community",
+                nav_download: "Download",
+                nav_patreon: "Patreon",
+                sponsors_title: "Sponsors",
+                supported_by: "Developed by",
+                wait_message: "That depth is not yet reachable. Please wait a little longer!"
+            },
+            ko: {
+                statement: "왜 우리는 기계의 언어에 우리 자신을 억지로 맞춰야 하는가?",
+                headline: "Water : 서술을, 호흡으로 바꾸다.",
+                concept: "물에는 형태가 없다.<br>쓰는 이의 사유가 그대로 코드로 스며든다.<br>파이썬이 '간결'하다면, Water는 '투명'하다.<br>손끝이 닿을 때마다 논리는 잔잔한 파동을 일으킨다.",
+                python_label: "Python",
+                water_label: "Water (Under the Surface: Private Beta)",
+                philosophy: "문법을 배우는 것이 아니다. 예법을 기억해내는 것이다.",
+                nav_docs: "문서",
+                nav_play: "플레이그라운드",
+                nav_packages: "패키지",
+                nav_community: "커뮤니티",
+                nav_download: "다운로드",
+                nav_patreon: "Patreon",
+                sponsors_title: "후원자",
+                supported_by: "Developed by",
+                wait_message: "아직 닿을 수 없는 깊이입니다. 조금만 더 기다려주세요!"
+            },
+            zh: {
+                statement: "为什么我们必须去适应机器的语言？",
+                headline: "Water：让编写，化为呼吸。",
+                concept: "水本无形。<br>书写者的思考，自然流转成代码的状貌。<br>倘若Python是“简洁”，那么Water便是“透明”。<br>每一次指尖的触碰，逻辑便静静泛起涟漪。",
+                python_label: "Python",
+                water_label: "Water (Under the Surface: Private Beta)",
+                philosophy: "并非学习语法，而是拾回作法。",
+                nav_docs: "文档",
+                nav_play: "游乐场",
+                nav_packages: "包管理",
+                nav_community: "社区",
+                nav_download: "下载",
+                nav_patreon: "Patreon",
+                sponsors_title: "赞助商",
+                supported_by: "Developed by",
+                wait_message: "此深处尚未触达。请再稍候片刻！"
+            }
+        };
+
+        function setLanguage(lang) {
+            document.documentElement.lang = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('btn-' + lang).classList.add('active');
+        }
+
+        document.querySelectorAll('.nav-link').forEach(el => {
+            el.addEventListener('click', (e) => {
+                const isEnabled = el.getAttribute('data-enabled');
+                if (isEnabled === 'false') {
+                    e.preventDefault();
+                    const toast = document.getElementById('toast');
+                    toast.classList.add('show');
+                    
+                    if(window.toastTimeout) clearTimeout(window.toastTimeout);
+                    window.toastTimeout = setTimeout(() => {
+                        toast.classList.remove('show');
+                    }, 3000);
+                }
+            });
+        });
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.35
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                    observer.unobserve(entry.target); 
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-up').forEach(el => {
+            observer.observe(el);
+        });
+
+        setTimeout(() => {
+            const firstElement = document.querySelector('.statement');
+            if (firstElement) {
+                firstElement.classList.add('in-view');
+            }
+        }, 100);
+    </script>
+</body>
+</html>
