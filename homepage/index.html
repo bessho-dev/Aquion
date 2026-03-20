@@ -474,10 +474,10 @@
     </div>
 
     <div class="corporate-sponsor">
-        <span class="corporate-label" data-i18n="supported_by">Supported by</span>
-        <a href="https://example.com" target="_blank" class="corporate-logo">
-            <img src="https://via.placeholder.com/80x32/1a1a2e/f9f9f9?text=LOGO" alt="Company Logo">
-            <span>Example Corp.</span>
+        <span class="corporate-label" data-i18n="supported_by">developed by</span>
+        <a href="https://github.com/bessho-dev" target="_blank" class="corporate-logo">
+            <img src="favicon.svg" alt="Company Logo">
+            <span>ifuto (13yo developer)</span>
         </a>
     </div>
 
@@ -491,7 +491,7 @@
             <a href="play.html" class="nav-link" data-enabled="false" data-i18n="nav_play">プレイグラウンド</a>
             <a href="packages.html" class="nav-link" data-enabled="false" data-i18n="nav_packages">パッケージ</a>
             <a href="community.html" class="nav-link" data-enabled="false" data-i18n="nav_community">コミュニティ</a>
-            <a href="https://www.patreon.com/" target="_blank" class="nav-link patreon-btn" data-enabled="true" data-i18n="nav_patreon">Patreon</a>
+            <a href="https://www.patreon.com/" target="_blank" class="nav-link patreon-btn" data-enabled="false" data-i18n="nav_patreon">Patreon</a>
             <a href="https://bessho-dev.github.io/water/homepage/download.html" target="_blank" class="nav-link download-btn" data-enabled="true" data-i18n="nav_download">ダウンロード</a>
             
             <div class="lang-selector-inline">
@@ -506,7 +506,7 @@
     <main>
         <section>
             <div class="fade-up statement" data-i18n="statement">
-                なぜ私たちは、機械の言葉（Pythonですら）に自分を合わせなければならないのか？
+                なぜ私たちは、機械の言葉に自分を合わせなければならないのか？
             </div>
         </section>
 
@@ -526,11 +526,11 @@
             <div class="code-comparison">
                 <div class="code-block fade-up">
                     <div class="code-label" data-i18n="python_label">Python</div>
-                    <div class="code-content">print([i for i in range(10) if i % 2 == 0])</div>
+                    <div class="code-content">a = round(min((x + 10) / 5, 10) - 2)</div>
                 </div>
                 <div class="code-block fade-up">
-                    <div class="code-label" data-i18n="water_label">Water</div>
-                    <div class="code-content">show every even number from 0 to 10.</div>
+                    <div class="code-label" data-i18n="water_label">Water (Under the Surface: Private Beta)</div>
+                    <div class="code-content">a = math.compute (x+10) (cv/5) (min(cv, 10)) (cv-2) (round(cv))</div>
                 </div>
             </div>
         </section>
@@ -600,7 +600,7 @@
     <script>
         const translations = {
             ja: {
-                statement: "なぜ私たちは、機械の言葉（Pythonですら）に自分を合わせなければならないのか？",
+                statement: "なぜ私たちは、機械の言葉に自分を合わせなければならないのか？",
                 headline: "Water：記述を、呼吸に変える。",
                 concept: "水には形がない。<br>書く者の思考が、そのままコードの形に流転する。<br>Pythonが『簡潔』なら、Waterは『透明』だ。<br>指先が触れるたび、ロジックは静かに波紋を広げる。",
                 python_label: "Python",
@@ -613,15 +613,15 @@
                 nav_download: "ダウンロード",
                 nav_patreon: "Patreon",
                 sponsors_title: "スポンサー",
-                supported_by: "Supported by",
+                supported_by: "Developed by",
                 wait_message: "その深みにはまだ到達できません。もう少々お待ちを！"
             },
             en: {
-                statement: "Why must we conform to the language of machines (even Python)?",
+                statement: "Why must we conform to the language of machines?",
                 headline: "Water: Turning description into breath.",
                 concept: "Water has no shape.<br>The writer's thoughts naturally flow into the shape of code.<br>If Python is 'concise', Water is 'transparent'.<br>With every touch of your fingertips, logic quietly ripples outward.",
                 python_label: "Python",
-                water_label: "Water",
+                water_label: "Water (Under the Surface: Private Beta)",
                 philosophy: "Do not learn syntax. Remember the flow.",
                 nav_docs: "Docs",
                 nav_play: "Playground",
@@ -630,15 +630,15 @@
                 nav_download: "Download",
                 nav_patreon: "Patreon",
                 sponsors_title: "Sponsors",
-                supported_by: "Supported by",
+                supported_by: "Developed by",
                 wait_message: "That depth is not yet reachable. Please wait a little longer!"
             },
             ko: {
-                statement: "왜 우리는 기계의 언어(심지어 파이썬조차)에 우리 자신을 억지로 맞춰야 하는가?",
+                statement: "왜 우리는 기계의 언어에 우리 자신을 억지로 맞춰야 하는가?",
                 headline: "Water : 서술을, 호흡으로 바꾸다.",
                 concept: "물에는 형태가 없다.<br>쓰는 이의 사유가 그대로 코드로 스며든다.<br>파이썬이 '간결'하다면, Water는 '투명'하다.<br>손끝이 닿을 때마다 논리는 잔잔한 파동을 일으킨다.",
                 python_label: "Python",
-                water_label: "Water",
+                water_label: "Water (Under the Surface: Private Beta)",
                 philosophy: "문법을 배우는 것이 아니다. 예법을 기억해내는 것이다.",
                 nav_docs: "문서",
                 nav_play: "플레이그라운드",
@@ -647,15 +647,15 @@
                 nav_download: "다운로드",
                 nav_patreon: "Patreon",
                 sponsors_title: "후원자",
-                supported_by: "Supported by",
+                supported_by: "Developed by",
                 wait_message: "아직 닿을 수 없는 깊이입니다. 조금만 더 기다려주세요!"
             },
             zh: {
-                statement: "为什么我们必须去适应机器的语言（即便是Python）？",
+                statement: "为什么我们必须去适应机器的语言？",
                 headline: "Water：让编写，化为呼吸。",
                 concept: "水本无形。<br>书写者的思考，自然流转成代码的状貌。<br>倘若Python是“简洁”，那么Water便是“透明”。<br>每一次指尖的触碰，逻辑便静静泛起涟漪。",
                 python_label: "Python",
-                water_label: "Water",
+                water_label: "Water (Under the Surface: Private Beta)",
                 philosophy: "并非学习语法，而是拾回作法。",
                 nav_docs: "文档",
                 nav_play: "游乐场",
@@ -664,7 +664,7 @@
                 nav_download: "下载",
                 nav_patreon: "Patreon",
                 sponsors_title: "赞助商",
-                supported_by: "Supported by",
+                supported_by: "Developed by",
                 wait_message: "此深处尚未触达。请再稍候片刻！"
             }
         };
