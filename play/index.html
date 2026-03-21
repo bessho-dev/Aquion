@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Language IDE</title>
+    
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/idea.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #f9f9f9;
+            --primary-color: #007aff;
+            --primary-hover: #005bb5;
+            --text-main: #333333;
+            --text-muted: #888888;
+            --border-color: #e5e5e5;
+            --panel-bg: #ffffff;
+            --console-bg: #1e1e1e;
+            --console-text: #00ff00;
+            --font-mono: 'Menlo', 'Monaco', 'Courier New', monospace;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .header h1 span { color: var(--primary-color); }
+        .header p { margin: 0.5rem 0 0; color: var(--text-muted); font-size: 0.95rem; }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--panel-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tabs {
+            display: flex;
+            background: #fdfdfd;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            border-bottom: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .tab:hover { color: var(--primary-color); background: rgba(0, 122, 255, 0.03); }
+        .tab.active { color: var(--primary-color); border-bottom: 3px solid var(--primary-color); background: var(--panel-bg); }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            background: #fbfbfb;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .toolbar-group { display: flex; gap: 0.8rem; }
+
+        .btn {
+            background: var(--panel-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn:hover { background: #f0f0f0; }
+        .btn.primary { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .btn.primary:hover { background: var(--primary-hover); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .panel { display: none; flex-direction: column; }
+        .panel.active { display: flex; }
+
+        /* CodeMirror Override */
+        .CodeMirror {
+            height: 350px;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1.5rem;
+            background: #f0f0f0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .output-box, .repl-log {
+            background: var(--console-bg);
+            color: var(--console-text);
+            padding: 1rem 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            box-sizing: border-box;
+        }
+
+        .repl-log { height: 400px; display: flex; flex-direction: column; gap: 0.3rem; padding-bottom: 0; }
+        
+        .repl-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--console-bg);
+            padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+        }
+
+        .repl-prompt { color: #007aff; font-weight: bold; font-family: var(--font-mono); margin-right: 0.8rem; }
+        .repl-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .log-in { color: #88ccff; }
+        .log-out { color: var(--console-text); }
+        .log-err { color: #ff5555; }
+        .log-sys { color: #888888; font-style: italic; }
+
+        .loader-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color); border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 1rem;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        #time-taken { font-weight: normal; font-size: 0.8rem; color: #888; }
+    </style>
+</head>
+<body>
+
+    <div class="loader-overlay" id="loader">
+        <div class="spinner"></div>
+        <div id="loader-text" style="font-weight: 600; color: var(--text-main);">Python環境を起動中...</div>
+    </div>
+
+    <div class="header">
+        <h1><span>Water</span> Language IDE</h1>
+        <p>A feature-rich playground for the Water interpreter</p>
+    </div>
+
+    <div class="container" id="app-container" style="display: none;">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('script')">📝 スクリプトエディタ</div>
+            <div class="tab" onclick="switchTab('repl')">💻 ターミナル (REPL)</div>
+        </div>
+
+        <div id="panel-script" class="panel active">
+            <div class="toolbar">
+                <div class="toolbar-group">
+                    <button class="btn" onclick="document.getElementById('file-upload').click()">📂 開く</button>
+                    <input type="file" id="file-upload" accept=".water,.txt" style="display:none" onchange="loadFile(event)">
+                    <button class="btn" onclick="saveFile()">💾 保存</button>
+                </div>
+                <div class="toolbar-group">
+                    <button class="btn primary" id="run-btn" onclick="runScript()">▶ 実行</button>
+                </div>
+            </div>
+            
+            <textarea id="script-editor"></textarea>
+            
+            <div class="output-header">
+                <span>出力結果 <span id="time-taken"></span></span>
+                <button class="btn" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="clearOutput('script-output')">クリア</button>
+            </div>
+            <div class="output-box" id="script-output"></div>
+        </div>
+
+        <div id="panel-repl" class="panel">
+            <div class="toolbar" style="justify-content: flex-end;">
+                <button class="btn" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="clearOutput('repl-log')">クリア</button>
+            </div>
+            <div class="repl-log" id="repl-log">
+                <div class="log-sys">Water Language REPL v1.0 (Pyodide Backend)</div>
+                <div class="log-sys">Type code and press Enter. Use Up/Down arrows for history.</div>
+                <div class="log-sys">--------------------------------------------------</div>
+            </div>
+            <div class="repl-input-wrapper">
+                <span class="repl-prompt">water></span>
+                <input type="text" class="repl-input" id="repl-input" autocomplete="off" spellcheck="false">
+            </div>
+        </div>
+    </div>
+
+<script>
+    let pyodideInstance;
+    let editor;
+    let replHistory = [];
+    let historyIndex = -1;
+
+    async function init() {
+        try {
+            // 1. Pyodideのロード
+            document.getElementById('loader-text').innerText = "Pyodideを読み込み中...";
+            pyodideInstance = await loadPyodide();
+
+            // 2. 同じ階層にある water.py を取得
+            document.getElementById('loader-text').innerText = "water.py を取得中...";
+            const response = await fetch('water.py');
+            if (!response.ok) {
+                throw new Error(`water.py の読み込みに失敗しました (HTTP ${response.status})。同じディレクトリに配置し、ローカルサーバー経由で開いているか確認してください。`);
+            }
+            const waterSource = await response.text();
+
+            // 3. water.py を評価して環境にロード
+            document.getElementById('loader-text').innerText = "Waterインタープリタを構築中...";
+            await pyodideInstance.runPythonAsync(waterSource);
+
+            // 4. stdoutをキャプチャするためのラッパー関数を定義
+            const wrapperCode = `
+import sys, io
+import traceback
+
+def run_water_script(code_str):
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
+    try:
+        interp = Interpreter()
+        run_source(code_str, interp)
+        return sys.stdout.getvalue()
+    except Exception as e:
+        return sys.stdout.getvalue() + "\\nRuntime Error: " + str(e)
+    finally:
+        sys.stdout = old_stdout
+
+repl_interp = None
+def run_water_repl(code_str):
+    global repl_interp
+    if repl_interp is None:
+        repl_interp = Interpreter()
+    
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
+    try:
+        global run_source
+        repl_interp = run_source(code_str, repl_interp)
+        return sys.stdout.getvalue()
+    except Exception as e:
+        return sys.stdout.getvalue() + "\\nRuntime Error: " + str(e)
+    finally:
+        sys.stdout = old_stdout
+`;
+            await pyodideInstance.runPythonAsync(wrapperCode);
+
+            // UIの初期化
+            initEditor();
+            initRepl();
+            
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('app-container').style.display = 'flex';
+
+        } catch (err) {
+            document.getElementById('loader-text').innerHTML = `<span style="color:red">初期化エラー</span><br><br>${err.message}`;
+            document.querySelector('.spinner').style.display = 'none';
+        }
+    }
+
+    // CodeMirrorの初期化
+    function initEditor() {
+        editor = CodeMirror.fromTextArea(document.getElementById("script-editor"), {
+            mode: "python", // Pythonベースのシンタックスハイライトで代用
+            theme: "idea",
+            lineNumbers: true,
+            indentUnit: 4,
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            extraKeys: {"Ctrl-Enter": runScript}
+        });
+        
+        // 初期コード例
+        editor.setValue("# Water Language Script\n\nlet x = 10\nlet y = 20\n\nif x < y:\n    print(\"Hello Water!\")\n    print(x + y)\n");
+    }
+
+    // タブ切り替え
+    function switchTab(mode) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        
+        if (mode === 'script') {
+            document.querySelectorAll('.tab')[0].classList.add('active');
+            document.getElementById('panel-script').classList.add('active');
+            editor.refresh();
+        } else {
+            document.querySelectorAll('.tab')[1].classList.add('active');
+            document.getElementById('panel-repl').classList.add('active');
+            document.getElementById('repl-input').focus();
+        }
+    }
+
+    // スクリプト実行
+    async function runScript() {
+        const code = editor.getValue();
+        const outBox = document.getElementById('script-output');
+        const timeBox = document.getElementById('time-taken');
+        
+        outBox.innerText = "実行中...";
+        timeBox.innerText = "";
+        
+        const startTime = performance.now();
+        
+        try {
+            pyodideInstance.globals.set("temp_code", code);
+            const result = await pyodideInstance.runPythonAsync(`run_water_script(temp_code)`);
+            const endTime = performance.now();
+            
+            outBox.innerHTML = result ? escapeHTML(result) : '<span class="log-sys">(出力なし)</span>';
+            timeBox.innerText = `- ${(endTime - startTime).toFixed(1)}ms`;
+        } catch (err) {
+            outBox.innerHTML = `<span class="log-err">${escapeHTML(String(err))}</span>`;
+        }
+    }
+
+    // REPLの初期化とイベントリスナー
+    function initRepl() {
+        const inputEl = document.getElementById('repl-input');
+        inputEl.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter') {
+                const code = inputEl.value.trim();
+                if (!code) return;
+
+                // 履歴に追加
+                replHistory.push(code);
+                historyIndex = replHistory.length;
+
+                inputEl.value = '';
+                appendReplLog(`water> ${code}`, 'log-in');
+
+                try {
+                    pyodideInstance.globals.set("temp_repl_code", code + "\\n");
+                    const result = await pyodideInstance.runPythonAsync(`run_water_repl(temp_repl_code)`);
+                    if (result.trim()) {
+                        const isErr = result.includes("Runtime Error:");
+                        appendReplLog(result.trim(), isErr ? 'log-err' : 'log-out');
+                    }
+                } catch (err) {
+                    appendReplLog(String(err), 'log-err');
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    inputEl.value = replHistory[historyIndex];
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIndex < replHistory.length - 1) {
+                    historyIndex++;
+                    inputEl.value = replHistory[historyIndex];
+                } else {
+                    historyIndex = replHistory.length;
+                    inputEl.value = '';
+                }
+            }
+        });
+    }
+
+    function appendReplLog(text, className) {
+        const logEl = document.getElementById('repl-log');
+        const div = document.createElement('div');
+        div.className = className;
+        div.innerText = text;
+        logEl.appendChild(div);
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function clearOutput(id) {
+        const el = document.getElementById(id);
+        if(id === 'repl-log') {
+            el.innerHTML = '<div class="log-sys">コンソールをクリアしました。</div>';
+        } else {
+            el.innerHTML = '';
+            document.getElementById('time-taken').innerText = '';
+        }
+    }
+
+    // ファイル操作
+    function saveFile() {
+        const text = editor.getValue();
+        const blob = new Blob([text], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'script.water';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    function loadFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            editor.setValue(e.target.result);
+        };
+        reader.readAsText(file);
+        event.target.value = ''; // Reset
+    }
+
+    function escapeHTML(str) {
+        return str.replace(/[&<>'"]/g, tag => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        }[tag]));
+    }
+
+    // 起動
+    window.onload = init;
+</script>
+
+</body>
+</html>
