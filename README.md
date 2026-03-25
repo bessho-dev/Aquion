@@ -12,30 +12,30 @@
 
 ## コード例 (初心者向け構文)
 変数を宣言
-```py
+```python
 set stay a int #静的な型の変数a
 ```
-```py
+```python
 set free b #動的な型の変数b
 ```
 
 変数の値を変更
-```py
+```python
 a = 1010
 ```
 
 変数の型を変更
-```py
+```python
 stayto a long #aの変数の方をlongに変更
 ```
 
 変数をプリント
-```py
+```python
 print(a)
 ```
 
 所有権の以降
-```py
+```python
 move a to c #所有権をaからcに
 ```
 
