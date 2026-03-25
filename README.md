@@ -42,7 +42,7 @@ move a to c #所有権をaからcに
 ## ダウンロード
 プロジェクト内のwater.exeをダウンロードしてください。  
 [公式サイト](https://bessho-dev.github.io/aquion/homepage)からもダウンロードできます。  
-water.exeは次期アップデートと同時に名前をaquion-v2.exeに変更します。  
+`water.exe`は次期アップデートと同時に名前を`aquion-v2.exe`に変更します。  
 依存関係や前提環境に関しては調査中です。  
 調査を代替でしていただくと助かります。
 
