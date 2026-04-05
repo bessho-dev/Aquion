@@ -2,23 +2,623 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Downloading...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download - Water</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@200;300;400&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #f9f9f9;
+            --text-color: #1a1a2e;
+            --font-serif: "Noto Serif JP", "Noto Serif", "Hiragino Mincho ProN", "Yu Mincho", serif;
+            --font-mono: "JetBrains Mono", "Courier New", monospace;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-serif);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        .bg-effects {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .ripple-bg {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(96, 165, 250, 0.05) 0%, rgba(96, 165, 250, 0) 65%);
+            animation: drift 20s infinite alternate ease-in-out;
+        }
+        .ripple-1 { width: 90vw; height: 90vw; top: -20vw; left: -20vw; }
+        .ripple-2 { width: 70vw; height: 70vw; bottom: -10vw; right: -10vw; animation-duration: 25s; animation-delay: -5s; }
+        .ripple-3 { width: 50vw; height: 50vw; top: 30vh; left: 40vw; animation-duration: 30s; animation-delay: -12s; }
+
+        @keyframes drift {
+            0%   { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(8vw, -5vw) scale(1.15); }
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 3rem;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(249,249,249,0.9) 30%, transparent);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+            opacity: 0.8;
+            color: var(--text-color);
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        .main-nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            opacity: 0.5;
+            transition: all 0.4s ease;
+        }
+
+        .nav-link:hover {
+            opacity: 1;
+        }
+        
+        .patreon-btn {
+            opacity: 0.7;
+            border-bottom: 1px solid transparent;
+        }
+        .patreon-btn:hover {
+            color: #ff424d;
+            opacity: 1;
+        }
+
+        .download-btn {
+            border: 1px solid rgba(26, 26, 46, 0.2);
+            padding: 0.4rem 1.4rem;
+            border-radius: 2rem;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+
+        .download-btn:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        .lang-selector-inline {
+            display: flex;
+            gap: 0.8rem;
+            margin-left: 0.5rem;
+            padding-left: 1.5rem;
+            border-left: 1px solid rgba(26, 26, 46, 0.15);
+        }
+
+        .lang-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            opacity: 0.25;
+            font-family: var(--font-serif);
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: opacity 0.5s ease;
+            padding: 0;
+            outline: none;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            opacity: 1;
+        }
+
+        .fade-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 2s cubic-bezier(0.2, 0.6, 0.3, 1),
+                        transform 2s cubic-bezier(0.2, 0.6, 0.3, 1);
+        }
+
+        .fade-up.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .corporate-sponsor {
+            position: fixed;
+            bottom: 2rem;
+            right: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.4rem;
+            z-index: 90;
+            opacity: 0.7;
+            transition: opacity 0.4s ease;
+        }
+        .corporate-sponsor:hover {
+            opacity: 1;
+        }
+        .corporate-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            opacity: 0.6;
+        }
+        .corporate-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+        }
+        .corporate-logo img {
+            height: 32px;
+            width: auto;
+            border-radius: 4px;
+        }
+
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10rem 5% 5rem;
+            box-sizing: border-box;
+        }
+
+        .headline {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .download-container {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 5rem;
+        }
+
+        /* Version Block */
+        .version-block {
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(26, 26, 46, 0.1);
+            border-radius: 1.5rem;
+            padding: 3rem 3.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        /* Highlight the first (latest) version */
+        .version-block.latest {
+            background: rgba(255, 255, 255, 0.6);
+            border-color: rgba(96, 165, 250, 0.4);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+        }
+
+        .version-block.latest::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, #60a5fa, #8b5cf6);
+        }
+
+        .version-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid rgba(26, 26, 46, 0.1);
+            padding-bottom: 1.5rem;
+        }
+
+        .version-title {
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            font-family: var(--font-mono);
+        }
+
+        .version-tag {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
+        }
+
+        .download-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .dl-card {
+            border: 1px solid rgba(26, 26, 46, 0.15);
+            border-radius: 1rem;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .dl-card:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(26, 26, 46, 0.15);
+        }
+
+        .dl-card:hover .dl-title,
+        .dl-card:hover .dl-icon {
+            color: var(--bg-color);
+        }
+
+        .dl-card:hover .dl-desc {
+            opacity: 0.8;
+        }
+
+        .dl-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .dl-icon {
+            font-size: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .dl-title {
+            font-size: 1.2rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+        }
+
+        .dl-desc {
+            font-size: 0.9rem;
+            opacity: 0.6;
+            line-height: 1.6;
+            letter-spacing: 0.02em;
+            flex-grow: 1;
+        }
+
+        .dl-button {
+            display: inline-block;
+            text-align: center;
+            padding: 0.8rem 1.2rem;
+            border: 1px solid currentColor;
+            border-radius: 2rem;
+            text-decoration: none;
+            color: inherit;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            transition: opacity 0.3s ease;
+            margin-top: auto;
+        }
+
+        .dl-button:hover {
+            opacity: 0.6;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(26, 26, 46, 0.95);
+            color: #f9f9f9;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-family: var(--font-serif);
+            letter-spacing: 0.05em;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.2, 0.6, 0.3, 1);
+            z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 900px) {
+            .header {
+                padding: 1.5rem;
+                flex-direction: column;
+                gap: 1.2rem;
+            }
+            .main-nav {
+                justify-content: center;
+                gap: 1rem;
+            }
+            .lang-selector-inline {
+                margin-left: 0;
+                padding-left: 0;
+                border-left: none;
+                width: 100%;
+                justify-content: center;
+                margin-top: 0.5rem;
+            }
+            .page-wrapper {
+                padding: 12rem 1.5rem 5rem;
+            }
+            .version-block {
+                padding: 2.5rem 1.5rem;
+            }
+            .corporate-sponsor {
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <p>ダウンロードが開始されます。始まらない場合は <a id="download-link" href="https://bessho-dev.github.io/Aquion/water.py">こちら</a> をクリックしてください。</p>
+
+    <div class="bg-effects">
+        <div class="ripple-bg ripple-1"></div>
+        <div class="ripple-bg ripple-2"></div>
+        <div class="ripple-bg ripple-3"></div>
+    </div>
+
+    <div class="corporate-sponsor">
+        <span class="corporate-label" data-i18n="supported_by">developed by</span>
+        <a href="https://github.com/bessho-dev" target="_blank" class="corporate-logo">
+            <img src="favicon.svg" alt="Company Logo" onerror="this.style.display='none'">
+            <span>ifuto (13yo developer)</span>
+        </a>
+    </div>
+
+    <header class="header">
+        <div class="logo">
+            <img src="favicon.svg" alt="Water icon" class="logo-icon" onerror="this.style.display='none'">
+            <span>Water</span>
+        </div>
+        <nav class="main-nav">
+            <a href="https://bessho-dev.github.io/water-docs" class="nav-link" data-enabled="true" data-i18n="nav_docs">ドキュメント</a>
+            <a href="https://bessho-dev.github.io/Aquion/play" class="nav-link" data-enabled="true" data-i18n="nav_play">プレイグラウンド</a>
+            <a href="packages.html" class="nav-link" data-enabled="false" data-i18n="nav_packages">パッケージ</a>
+            <a href="community.html" class="nav-link" data-enabled="false" data-i18n="nav_community">コミュニティ</a>
+            <a href="https://www.patreon.com/" target="_blank" class="nav-link patreon-btn" data-enabled="false" data-i18n="nav_patreon">Patreon</a>
+            
+            <div class="lang-selector-inline">
+                <button class="lang-btn" id="btn-en" onclick="setLanguage('en')">EN</button>
+                <button class="lang-btn active" id="btn-ja" onclick="setLanguage('ja')">JA</button>
+                <button class="lang-btn" id="btn-ko" onclick="setLanguage('ko')">KO</button>
+                <button class="lang-btn" id="btn-zh" onclick="setLanguage('zh')">ZH</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-wrapper">
+        <h1 class="headline fade-up" data-i18n="dl_headline">波紋を手元に。</h1>
+
+        <div class="download-container">
+            
+            <div class="version-block latest fade-up">
+                <div class="version-header">
+                    <div class="version-title">Ver 2.0</div>
+                </div>
+
+                <div class="download-cards">
+                    <div class="dl-card">
+                        <div class="dl-header">
+                            <span class="dl-icon">⚙️</span>
+                            <span class="dl-title" data-i18n="env_ver">環境構築用 exe</span>
+                        </div>
+                        <div class="dl-desc" data-i18n="env_desc">Aquionの実行に必要な環境をPCに構築するインストーラーです。</div>
+                        <a href="https://bessho-dev.github.io/downloads/ver2/setup_aquion.exe" class="dl-button">Download .exe</a>
+                    </div>
+
+                    <div class="dl-card">
+                        <div class="dl-header">
+                            <span class="dl-icon">💧</span>
+                            <span class="dl-title" data-i18n="aquion_ver">exe版 Aquion</span>
+                        </div>
+                        <div class="dl-desc" data-i18n="aquion_desc">Python環境不要で動作する、Water専用エディタのスタンドアロン版です。</div>
+                        <a href="https://bessho-dev.github.io/downloads/ver2/aquion.exe" class="dl-button">Download aquion.exe</a>
+                    </div>
+
+                    <div class="dl-card">
+                        <div class="dl-header">
+                            <span class="dl-icon">🐍</span>
+                            <span class="dl-title" data-i18n="python_ver">Python 版 Aquion</span>
+                        </div>
+                        <div class="dl-desc" data-i18n="python_desc">既存のPython環境に統合し、利用するためのパッケージです。</div>
+                        <a href="https://bessho-dev.github.io/downloads/ver2/aquion.py" class="dl-button">Download aquion.py</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    
+    <div id="toast" class="toast">
+        <span data-i18n="wait_message">その深みにはまだ到達できません。もう少々お待ちを！</span>
+    </div>
 
     <script>
-        window.onload = function() {
-            const url = "https://bessho-dev.github.io/Aquion/water.py";
-            const fileName = "water.py";
+        const translations = {
+            ja: {
+                nav_docs: "ドキュメント",
+                nav_play: "プレイグラウンド",
+                nav_packages: "パッケージ",
+                nav_community: "コミュニティ",
+                nav_patreon: "Patreon",
+                supported_by: "Developed by",
+                wait_message: "その深みにはまだ到達できません。もう少々お待ちを！",
+                
+                dl_headline: "波紋を手元に。",
+                latest_tag: "最新リリース",
+                env_ver: "環境構築用 exe",
+                env_desc: "Waterの実行に必要な環境をPCに構築するインストーラーです。",
+                aquion_ver: "exe版 Aquion",
+                aquion_desc: "Python環境不要で動作する、Water専用エディタのスタンドアロン版です。",
+                python_ver: "Python 版",
+                python_desc: "既存のPython環境に統合し、コマンドライン等から利用するためのパッケージです。"
+            },
+            en: {
+                nav_docs: "Docs",
+                nav_play: "Playground",
+                nav_packages: "Packages",
+                nav_community: "Community",
+                nav_patreon: "Patreon",
+                supported_by: "Developed by",
+                wait_message: "That depth is not yet reachable. Please wait a little longer!",
 
-            const anchor = document.createElement('a');
-            anchor.href = url;
-            anchor.download = fileName;
-            document.body.appendChild(anchor);
-            anchor.click();
-            document.body.removeChild(anchor);
+                dl_headline: "Bring the ripples to your hands.",
+                latest_tag: "Latest Release",
+                env_ver: "Environment Setup exe",
+                env_desc: "Installer to set up the necessary environment to run Water on your PC.",
+                aquion_ver: "Aquion (Standalone exe)",
+                aquion_desc: "A standalone version of the dedicated Water editor that runs without a Python environment.",
+                python_ver: "Python Version",
+                python_desc: "A package to integrate into your existing Python environment for command-line use."
+            },
+            ko: {
+                nav_docs: "문서",
+                nav_play: "플레이그라운드",
+                nav_packages: "패키지",
+                nav_community: "커뮤니티",
+                nav_patreon: "Patreon",
+                supported_by: "Developed by",
+                wait_message: "아직 닿을 수 없는 깊이입니다. 조금만 더 기다려주세요!",
+
+                dl_headline: "파문을 당신의 손에.",
+                latest_tag: "최신 릴리스",
+                env_ver: "환경 구축용 exe",
+                env_desc: "PC에서 Water를 실행하는 데 필요한 환경을 구축하는 설치 프로그램입니다.",
+                aquion_ver: "exe버전 Aquion",
+                aquion_desc: "Python 환경 없이 작동하는 전용 Water 편집기의 독립 실행형 버전입니다.",
+                python_ver: "Python 버전",
+                python_desc: "기존 Python 환경에 통합하여 명령줄 등에서 사용하기 위한 패키지입니다."
+            },
+            zh: {
+                nav_docs: "文档",
+                nav_play: "游乐场",
+                nav_packages: "包管理",
+                nav_community: "社区",
+                nav_patreon: "Patreon",
+                supported_by: "Developed by",
+                wait_message: "此深处尚未触达。请再稍候片刻！",
+
+                dl_headline: "让涟漪触手可及。",
+                latest_tag: "最新发布",
+                env_ver: "环境配置 exe",
+                env_desc: "在您的电脑上配置运行 Water 所需环境的安装程序。",
+                aquion_ver: "exe版 Aquion",
+                aquion_desc: "无需 Python 环境即可运行的 Water 专属编辑器的独立版本。",
+                python_ver: "Python 版",
+                python_desc: "集成到现有的 Python 环境中，供命令行等使用的依赖包。"
+            }
         };
+
+        function setLanguage(lang) {
+            document.documentElement.lang = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('btn-' + lang).classList.add('active');
+        }
+
+        document.querySelectorAll('.nav-link').forEach(el => {
+            el.addEventListener('click', (e) => {
+                const isEnabled = el.getAttribute('data-enabled');
+                if (isEnabled === 'false') {
+                    e.preventDefault();
+                    const toast = document.getElementById('toast');
+                    toast.classList.add('show');
+                    
+                    if(window.toastTimeout) clearTimeout(window.toastTimeout);
+                    window.toastTimeout = setTimeout(() => {
+                        toast.classList.remove('show');
+                    }, 3000);
+                }
+            });
+        });
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                    observer.unobserve(entry.target); 
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-up').forEach(el => {
+            observer.observe(el);
+        });
+
+        setTimeout(() => {
+            document.querySelectorAll('.headline').forEach(el => el.classList.add('in-view'));
+        }, 100);
     </script>
 </body>
 </html>
